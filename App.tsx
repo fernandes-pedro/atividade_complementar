@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, ScrollView, SafeAreaView, ActivityIndicator } from 'react-native';
-import News from './src/components/News';
-
+import { StatusBar as sb} from 'react-native'
+import { Platform, StyleSheet, Text, View, ScrollView, SafeAreaView, ActivityIndicator } from 'react-native';
+import News from './src/components/News.jsx';
 import { fetchNewsService, NewsData } from './src/utils/handle-api';
 
 export default function App() {
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
     alignItems: 'center',
-    paddingTop: 40, // Ensure header is spaced from exact top
+    paddingTop: Platform.OS === 'android' ? sb.currentHeight:0,
   },
   headerTitle: {
     fontSize: 22,
