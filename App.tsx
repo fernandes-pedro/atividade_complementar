@@ -4,7 +4,7 @@ import { StatusBar as sb} from 'react-native'
 import { Platform, StyleSheet, Text, View, ScrollView, SafeAreaView, ActivityIndicator } from 'react-native';
 import News from './src/components/News.jsx';
 import { fetchNewsService, NewsData } from './src/utils/handle-api';
-
+import globalStyles from './src/styles/global.js';
 export default function App() {
   const [newsList, setNewsList] = useState<NewsData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -63,7 +63,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: globalStyles().backgroundColor,
   },
   header: {
     padding: 16,
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 10,
-    fontSize: 16,
+    fontSize: globalStyles().bodyFontSize,
     color: '#666',
   },
   errorText: {
