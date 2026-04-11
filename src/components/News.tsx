@@ -6,6 +6,7 @@ interface NewsProps {
   image?: string | null;
   published: string;
   link: string;
+  summary: string;
 }
 
 export default function News({ title, image, published, link }: NewsProps) {
@@ -27,7 +28,6 @@ export default function News({ title, image, published, link }: NewsProps) {
       {image ? (
         <Image style={styles.image} source={{ uri: image }} resizeMode="cover" />
       ) : null}
-      
       <View style={styles.content}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.date}>{published}</Text>
