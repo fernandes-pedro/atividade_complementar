@@ -1,10 +1,23 @@
 import React, { useState, useEffect } from 'react';
+import { 
+  Platform, 
+  StyleSheet, 
+  Text, 
+  View, 
+  ScrollView, 
+  SafeAreaView,
+  ActivityIndicator, 
+  StatusBar as sb
+} from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { StatusBar as sb} from 'react-native'
-import { Platform, StyleSheet, Text, View, ScrollView, SafeAreaView, ActivityIndicator } from 'react-native';
-import News from './src/components/News.jsx';
+
+
+import News from './src/components/News'; 
 import { fetchNewsService, NewsData } from './src/utils/handle-api';
-import globalStyles from './src/styles/global.js';
+
+
+import { globalStyles } from './src/styles/global'; 
+
 export default function App() {
   const [newsList, setNewsList] = useState<NewsData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -28,7 +41,7 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="dark" />
+      <StatusBar style="auto" />
       
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Últimas notícias</Text>
@@ -36,8 +49,11 @@ export default function App() {
 
       {loading ? (
         <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color="#0000ff" />
-          <Text style={styles.loadingText}>Carregando notícias...</Text>
+          <ActivityIndicator size="large" color={globalStyles.primaryColor} />
+          {/* b) Aplicando estilo global no texto */}
+          <Text style={[styles.loadingText, { fontSize: globalStyles.bodyFontSize }]}>
+            Carregando notícias...
+          </Text>
         </View>
       ) : error ? (
         <View style={styles.centerContainer}>
@@ -64,7 +80,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: globalStyles().backgroundColor,
+    backgroundColor: globalStyles.backgroundColor,
   },
   header: {
     padding: 16,
@@ -72,7 +88,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
     alignItems: 'center',
-    paddingTop: Platform.OS === 'android' ? sb.currentHeight:0,
+    paddingTop: Platform.OS === 'android' ? sb.currentHeight : 0,
   },
   headerTitle: {
     fontSize: 22,
@@ -85,7 +101,6 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 10,
-    fontSize: globalStyles().bodyFontSize,
     color: '#666',
   },
   errorText: {
