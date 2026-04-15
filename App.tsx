@@ -7,7 +7,8 @@ import {
   ScrollView, 
   SafeAreaView,
   ActivityIndicator, 
-  StatusBar as sb
+  StatusBar as sb,
+  FlatList
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
@@ -63,18 +64,30 @@ export default function App() {
           <Text style={styles.errorText}>Erro: {error}</Text>
         </View>
       ) : (
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          {newsList.map((item) => (
-            <News
-              key={item.id.toString()}
-              title={item.title}
-              image={item.image}
-              published={item.published}
-              link={item.link}
-              summary={item.summary}
-            />
-          ))}
-        </ScrollView>
+          <FlatList
+    data={newsList}
+    keyExtractor={(item) => item.id.toString()}
+    renderItem={({ item }) => (
+      <News
+        title={item.title}
+        image={item.image}
+        published={item.published}
+        link={item.link}
+        summary={item.summary}
+      />
+    )}
+    ItemSeparatorComponent={() => (
+      <View style={styles.separator} />
+    )}
+    ListEmptyComponent={() => (
+      !loading && (
+        <View style={styles.emptyContainer}>
+          <Text>Nenhuma notícia disponível no momento.</Text>
+        </View>
+      )
+    )}
+    contentContainerStyle={styles.scrollContent}
+  />
       )}
     </SafeAreaView>
   );
@@ -113,4 +126,18 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: 16,
   },
+  separator: {
+    height: 1,
+    backgroundColor: '#e0e0e0',
+    marginHorizontal: 16,
+    marginBottom: 16, // Espaçamento entre os itens
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 50,
+    paddingBottom: 20,
+  },
+
 });
