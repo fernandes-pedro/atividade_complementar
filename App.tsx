@@ -1,28 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Platform, 
   StyleSheet, 
   Text, 
   View, 
-  ScrollView, 
-  SafeAreaView,
+  FlatList, 
+  SafeAreaView, 
   ActivityIndicator, 
-  StatusBar as sb,
-  FlatList
+  StatusBar as RNStatusBar,
+  TextInput,
+  TouchableOpacity
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-
-
-import News from './src/components/News'; 
+import News from './src/components/News';
 import { fetchNewsService, NewsData } from './src/utils/handle-api';
-
-
-import { globalStyles } from './src/styles/global'; 
+import { globalStyles } from './src/styles/global';
 
 export default function App() {
   const [newsList, setNewsList] = useState<NewsData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   useEffect(() => {
     fetchNews();
@@ -40,54 +39,81 @@ export default function App() {
     }
   };
 
+  const filteredAndSortedNews = useMemo(() => {
+    return newsList
+      .filter(item => 
+        item.title.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+      .sort((a, b) => {
+        const dateA = new Date(a.published).getTime();
+        const dateB = new Date(b.published).getTime();
+        return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
+      });
+  }, [newsList, searchQuery, sortOrder]);
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="auto" />
       
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Últimas notícias</Text>
+        
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Buscar notícias..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+
+        <TouchableOpacity 
+          style={[
+            styles.sortButton, 
+            { backgroundColor: globalStyles.primaryColor }
+          ]}
+          onPress={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
+        >
+          <Text style={styles.sortButtonText}>
+            {sortOrder === 'desc' ? '↓ Mais recentes' : '↑ Mais antigas'}
+          </Text>
+        </TouchableOpacity>
       </View>
-          {!loading && !error && (
-      <Text style={{ padding: 16, fontSize: 14, color: '#666' }}>
-        {newsList.length} notícias encontradas
-      </Text>
-)}
+
+      {!loading && !error && (
+        <Text style={styles.counterText}>
+          {filteredAndSortedNews.length} notícias encontradas
+        </Text>
+      )}
+
       {loading ? (
         <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color={globalStyles.primaryColor} />
-          <Text style={[styles.loadingText, { fontSize: globalStyles.bodyFontSize }]}>
-            Carregando notícias...
-          </Text>
+          <Text style={{ fontSize: globalStyles.bodyFontSize }}>Carregando notícias...</Text>
         </View>
       ) : error ? (
         <View style={styles.centerContainer}>
           <Text style={styles.errorText}>Erro: {error}</Text>
         </View>
       ) : (
-          <FlatList
-    data={newsList}
-    keyExtractor={(item) => item.id.toString()}
-    renderItem={({ item }) => (
-      <News
-        title={item.title}
-        image={item.image}
-        published={item.published}
-        link={item.link}
-        summary={item.summary}
-      />
-    )}
-    ItemSeparatorComponent={() => (
-      <View style={styles.separator} />
-    )}
-    ListEmptyComponent={() => (
-      !loading && (
-        <View style={styles.emptyContainer}>
-          <Text>Nenhuma notícia disponível no momento.</Text>
-        </View>
-      )
-    )}
-    contentContainerStyle={styles.scrollContent}
-  />
+        <FlatList
+          data={filteredAndSortedNews}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <News
+              title={item.title}
+              image={item.image}
+              published={item.published}
+              link={item.link}
+              summary={item.summary}
+            />
+          )}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          ListEmptyComponent={() => (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>Nenhuma notícia disponível no momento.</Text>
+            </View>
+          )}
+          contentContainerStyle={styles.scrollContent}
+        />
       )}
     </SafeAreaView>
   );
@@ -103,21 +129,46 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
-    alignItems: 'center',
-    paddingTop: Platform.OS === 'android' ? sb.currentHeight : 0,
+    paddingTop: Platform.OS === 'android' ? RNStatusBar.currentHeight : 0,
   },
   headerTitle: {
     fontSize: 22,
     fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  searchInput: {
+    height: 45,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    paddingHorizontal: 15,
+    marginTop: 15,
+  },
+  sortButton: {
+    marginTop: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    alignSelf: 'center',
+    width: '100%',
+    alignItems: 'center',
+  },
+  sortButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  counterText: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    fontSize: 14,
+    color: '#666',
+    fontStyle: 'italic',
   },
   centerContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  loadingText: {
-    marginTop: 10,
-    color: '#666',
   },
   errorText: {
     color: 'red',
@@ -130,14 +181,16 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#e0e0e0',
     marginHorizontal: 16,
-    marginBottom: 16, // Espaçamento entre os itens
+    marginBottom: 16,
   },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 50,
-    paddingBottom: 20,
   },
-
+  emptyText: {
+    fontSize: 16,
+    color: '#999',
+  },
 });
