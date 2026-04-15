@@ -46,7 +46,11 @@ export default function App() {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Últimas notícias</Text>
       </View>
-
+          {!loading && !error && (
+      <Text style={{ padding: 16, fontSize: 14, color: '#666' }}>
+        {newsList.length} notícias encontradas
+      </Text>
+)}
       {loading ? (
         <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color={globalStyles.primaryColor} />

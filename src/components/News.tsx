@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, Linking } from 'react-native';
 
 interface NewsProps {
@@ -9,7 +9,7 @@ interface NewsProps {
   summary: string;
 }
 
-export default function News({ title, image, published, link }: NewsProps) {
+export default function News({ title, image, published, link, summary }: NewsProps) {
   const handlePress = async () => {
     try {
       const supported = await Linking.canOpenURL(link);
@@ -22,15 +22,29 @@ export default function News({ title, image, published, link }: NewsProps) {
       console.error(error);
     }
   };
+  const [imageError, setImageError] = useState(false);
 
   return (
     <TouchableOpacity style={styles.card} onPress={handlePress} activeOpacity={0.7}>
-      {image ? (
-        <Image style={styles.image} source={{ uri: image }} resizeMode="cover" />
-      ) : null}
+          {image && !imageError ? (
+      <Image 
+        style={styles.image} 
+        source={{ uri: image }} 
+        onError={() => setImageError(true)} 
+      />
+    ) : (
+      <View style={[styles.image, { backgroundColor: '#ccc', justifyContent: 'center', alignItems: 'center' }]}>
+        <Text>Sem imagem</Text>
+      </View>
+    )}
       <View style={styles.content}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.date}>{published}</Text>
+            {summary ? (
+      <Text style={styles.summary} numberOfLines={2}>
+        {summary}
+      </Text>
+    ) : null}
       </View>
     </TouchableOpacity>
   );
@@ -64,5 +78,10 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 14,
     color: '#666',
+  },
+  summary: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 8,
   },
 });
