@@ -9,12 +9,14 @@ import {
   ActivityIndicator, 
   StatusBar as RNStatusBar,
   TextInput,
-  TouchableOpacity
+  TouchableOpacity,
+  Modal
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import News from './src/components/News';
 import { fetchNewsService, NewsData } from './src/utils/handle-api';
 import { globalStyles } from './src/styles/global';
+import NewsDetail from './src/components/NewsDetail';
 
 export default function App() {
   const [newsList, setNewsList] = useState<NewsData[]>([]);
@@ -22,6 +24,7 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [selectedNews, setSelectedNews] = useState<NewsData | null>(null);
 
   useEffect(() => {
     fetchNews();
@@ -98,13 +101,15 @@ export default function App() {
           data={filteredAndSortedNews}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
-            <News
-              title={item.title}
-              image={item.image}
-              published={item.published}
-              link={item.link}
-              summary={item.summary}
-            />
+            <TouchableOpacity onPress={() => setSelectedNews(item)}>
+              <News
+                title={item.title}
+                image={item.image}
+                published={item.published}
+                link={item.link}
+                summary={item.summary}
+              />
+            </TouchableOpacity>
           )}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
           ListEmptyComponent={() => (
@@ -115,6 +120,17 @@ export default function App() {
           contentContainerStyle={styles.scrollContent}
         />
       )}
+
+      <Modal
+        animationType="slide"
+        visible={selectedNews !== null}
+        onRequestClose={() => setSelectedNews(null)}
+      >
+        <NewsDetail 
+          news={selectedNews} 
+          onClose={() => setSelectedNews(null)} 
+        />
+      </Modal>
     </SafeAreaView>
   );
 }
