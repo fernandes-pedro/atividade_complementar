@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "news-app-expo",
-    "slug": "news-app-expo",
+    "name": "News App Expo",
+    "slug": "news-app-pedro-fernandes",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -12,7 +12,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.pedrofernandes.newsapp"
     },
     "android": {
       "adaptiveIcon": {
@@ -21,6 +22,7 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
+      "package": "com.pedrofernandes.newsapp",
       "predictiveBackGestureEnabled": false
     },
     "web": {

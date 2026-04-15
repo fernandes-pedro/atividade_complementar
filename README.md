@@ -49,6 +49,15 @@ Para rodar o projeto localmente, certifique-se de possuir:
 - `News.tsx`: Componente focado apenas em renderizar os cartões individuais de cada notícia separadamente.
 - `services/api-handler.ts`: Módulo focado especificamente em realizar a chamada externa HTTP (Fetch) organizando os retornos e tipagens das notícias.
 
+## Deploy com EAS
+
+O Expo Application Services (EAS) é um ecossistema de ferramentas em nuvem criado para facilitar o ciclo de vida de apps Expo e React Native, cuidando de processos complexos como a compilação de binários nativos e a submissão para as lojas. O perfil **development** é usado para criar builds que rodam com ferramentas de depuração (Expo Go ou Development Client); o perfil **preview** gera versões para testes internos ou compartilhamento (como APKs instaláveis diretamente no Android) sem passar pela loja oficial; já o perfil **production** é otimizado para o usuário final, com configurações prontas para submissão à App Store ou Play Store.
+
+Para executar um build de preview para Android, utilize o comando:
+```bash
+eas build --profile preview --platform android
+```
+
 ---
 
 > Projeto desenvolvido visando a facilidade e aprendizado para desenvolvedores que estão iniciando os estudos com React Native e Expo.
