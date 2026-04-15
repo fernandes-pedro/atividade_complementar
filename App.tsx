@@ -50,7 +50,6 @@ export default function App() {
       {loading ? (
         <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color={globalStyles.primaryColor} />
-          {/* b) Aplicando estilo global no texto */}
           <Text style={[styles.loadingText, { fontSize: globalStyles.bodyFontSize }]}>
             Carregando notícias...
           </Text>
